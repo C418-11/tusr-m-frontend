@@ -9,13 +9,19 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@unocss/vite": "^66.1.0-beta.12",
     "@vitejs/plugin-vue": "^5.2.2",
     "@vue/tsconfig": "^0.7.0",
+    "sass": "^1.87.0",
     "typescript": "~5.7.2",
+    "unocss": "^66.1.0-beta.12",
     "vite": "^6.3.1",
+    "vite-plugin-checker": "^0.9.1",
+    "vite-plugin-vue-devtools": "^7.7.5",
     "vue-tsc": "^2.2.8"
   }
 }

@@ -1,0 +1,36 @@
+:root {
+  --background-spot-colors: #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEEAD, #FF9F43;
+  --background-spot-area-ratio: 0.6;
+}
+
+.background-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  filter: blur(8em);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+//noinspection CssUnusedSymbol
+.background-spot {
+  position: absolute;
+  border-radius: 50%;
+  animation: drift 20s linear infinite;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(15vw, 10vh);
+  }
+  50% {
+    transform: translate(-10vw, 15vh);
+  }
+  75% {
+    transform: translate(5vw, -8vh);
+  }
+}

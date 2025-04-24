@@ -1,0 +1,55 @@
+.notifications-container {
+  top: .5em;
+  left: .5em;
+  gap: 1em;
+}
+
+.notification {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  gap: .7em;
+  border-radius: 2em;
+  align-items: center;
+  padding: 0.7em 1.1em;
+  box-shadow: 0 .5em 1.8em rgba(var(--color-box-shadow) / .2);
+  backdrop-filter: blur(2em);
+  -webkit-backdrop-filter: blur(2em);
+  overflow-wrap: anywhere;
+  transform: translateX(0);
+  transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+  opacity 0.4s linear,
+  box-shadow var(--theme-transition-duration),
+}
+
+.notification-enter-animation {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.notification::before {
+  align-self: flex-start;
+  content: "";
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.notification.fade-out {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* 类型样式 */
+.notification-success::before {
+  background: var(--color-success);
+}
+
+.notification-error::before {
+  background: var(--color-error);
+}
+
+.notification-warning::before {
+  background: var(--color-warning);
+}

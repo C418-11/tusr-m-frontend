@@ -1,0 +1,36 @@
+@use "background";
+@use "colors";
+@use "notification";
+
+:root {
+  /* 功能色 */
+  --color-success: #20c997;
+  --color-warning: #ffd43b;
+  --color-error: #ff6b6b;
+
+  /* 阴影色 */
+  --color-box-shadow: 0 0 0;
+}
+
+@mixin dark($theme-name) {
+  [data-theme="#{$theme-name}"] {
+    @include colors.dark;
+
+    --color-box-shadow: 255 255 255;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  @include dark("sync");
+}
+
+@include dark("dark");
+
+body {
+  background: var(--neutral-50);
+  color: var(--neutral-900);
+  --theme-transition-duration: 10s;
+  transition: background-color var(--theme-transition-duration),
+  color var(--theme-transition-duration);
+}
+
