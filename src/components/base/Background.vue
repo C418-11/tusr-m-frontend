@@ -58,5 +58,5 @@ onBeforeUnmount(() => {
   <div ref="spotsContainer" class="background-container"></div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 </style>

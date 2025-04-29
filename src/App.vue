@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import ThemeSwitcher from "./components/base/ThemeSwitcher.vue";
-import Background from './components/base/Background.vue';
-import Notification from './components/base/Notification.vue';
+import ThemeSwitcher from "@/components/base/ThemeSwitcher.vue";
+import Background from '@/components/base/Background.vue';
+import Notification from '@/components/base/Notification.vue';
+import UserProfile from "@/components/base/UserProfile.vue";
 import {onMounted} from "vue";
 
 onMounted(() => {
@@ -15,6 +16,9 @@ onMounted(() => {
   <Background/>
   <Notification/>
   <ThemeSwitcher/>
+  <UserProfile/>
+
+  <router-view/>
 </template>
 
 <style scoped>

@@ -1,53 +1,126 @@
 <script lang="ts" setup>
+import {ref, watch} from 'vue';
 
-import {type Ref, ref} from "vue";
+interface Notification {
+  id: number;
+  message: string;
+  type: string;
+}
 
-const notificationContainer: Ref = ref(undefined);
+const notifications = ref<Notification[]>([]);
+let idCounter = 0;
+
+watch(notifications, (newVal) => {
+  if (newVal.length === 0) {
+    idCounter = 0;
+  }
+}, {deep: true});
 
 function showNotification(message: string, type: string = 'success', duration: number = 5000) {
-  // 创建通知元素
-  const notification = document.createElement('div');
-  const content = document.createElement('div')
-  notification.appendChild(content)
+  const id = idCounter++;
+  notifications.value.push({id, message, type});
 
-  notification.className = `notification notification-${type} notification-enter-animation`;
-  content.className = 'notification-content';
-  content.innerText = message;
-
-  // 添加进场动画
-  notificationContainer.value.appendChild(notification);
-  requestAnimationFrame((() => {
-    setTimeout(() => {
-      notification.classList.remove('notification-enter-animation');
-    }, 0);
-  }));
-
-  // 自动消失逻辑
-  const autoRemove = setTimeout(() => {
-    notification.classList.add('fade-out');
-    notification.addEventListener('transitionend', () => notification.remove());
+  setTimeout(() => {
+    const index = notifications.value.findIndex(n => n.id === id);
+    if (index !== -1) notifications.value.splice(index, 1);
   }, duration);
+}
 
-  // 点击手动关闭
-  notification.addEventListener('click', () => {
-    clearTimeout(autoRemove);
-    notification.classList.add('fade-out');
-    notification.addEventListener('transitionend', () => notification.remove());
-  });
+// 点击关闭
+function removeNotification(id: number) {
+  const index = notifications.value.findIndex(n => n.id === id);
+  if (index !== -1) notifications.value.splice(index, 1);
 }
 
 window.showNotification = showNotification;
 </script>
 
 <template>
-  <div ref="notificationContainer" class="notifications-container"></div>
+  <TransitionGroup
+      class="notifications-container"
+      name="notification"
+      tag="div"
+  >
+    <div
+        v-for="notification in notifications"
+        :key="notification.id"
+        :class="`notification-${notification.type}`"
+        class="notification"
+        @click="removeNotification(notification.id)"
+    >
+      <div class="notification-content">
+        {{ notification.message }}
+      </div>
+    </div>
+  </TransitionGroup>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .notifications-container {
   position: fixed;
   display: flex;
-  flex-direction: column-reverse;
   z-index: 9999;
+  top: .5em;
+  left: .5em;
+  gap: 1em;
+  flex-direction: column-reverse;
+
+  --notifications-enter-leave-duration: 0.4s;
+  --notifications-move-duration: 0.2s;
+}
+
+.notification {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  gap: .7em;
+  border-radius: 2em;
+  align-items: center;
+  padding: 0.7em 1.1em;
+  box-shadow: 0 .5em 1em rgba(var(--color-box-shadow) / .1);
+  backdrop-filter: blur(2em);
+  -webkit-backdrop-filter: blur(2em);
+  overflow-wrap: anywhere;
+  transition: box-shadow var(--theme-transition-duration);
+
+  &:before {
+    align-self: flex-start;
+    content: "";
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+}
+
+/* 处理列表项移动的过渡 */
+.notification-move {
+  transition: transform var(--notifications-move-duration) linear;
+}
+
+/* 进入和离开动画 */
+.notification-enter-active,
+.notification-leave-active {
+  transition: transform var(--notifications-enter-leave-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55),
+  opacity var(--notifications-enter-leave-duration) linear;
+}
+
+.notification-enter-from,
+.notification-leave-to {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+/* 类型样式 */
+.notification-success::before {
+  background: var(--color-success);
+}
+
+.notification-error::before {
+  background: var(--color-error);
+}
+
+.notification-warning::before {
+  background: var(--color-warning);
 }
 </style>

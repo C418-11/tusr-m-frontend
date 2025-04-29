@@ -1,6 +1,5 @@
 @use "background";
 @use "colors";
-@use "notification";
 
 :root {
   /* 功能色 */
@@ -10,6 +9,9 @@
 
   /* 阴影色 */
   --color-box-shadow: 0 0 0;
+
+  /* 主题色 */
+  --theme-color: #20c997;
 }
 
 @mixin dark($theme-name) {
@@ -31,6 +33,14 @@ body {
   color: var(--neutral-900);
   --theme-transition-duration: 10s;
   transition: background-color var(--theme-transition-duration),
-  color var(--theme-transition-duration);
+  color var(--theme-transition-duration),
+  box-shadow var(--theme-transition-duration),
+  border-color var(--theme-transition-duration);
 }
 
+.theme-transition {
+  transition: background-color var(--theme-transition-duration),
+  color var(--theme-transition-duration),
+  box-shadow var(--theme-transition-duration),
+  border-color var(--theme-transition-duration);
+}

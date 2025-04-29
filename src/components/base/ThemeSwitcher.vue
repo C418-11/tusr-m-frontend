@@ -63,18 +63,19 @@ onMounted(() => {
           desc: "暗色"
         }
       ].forEach(theme => registerTheme(theme));
+
+      // 初始化主题
+      currentTheme.value = currentTheme.value;
     }
 )
 </script>
 
 <template>
-  <div class="theme-switcher-container">
-    <button class="theme-switcher-button" @click="toggleTheme">
-      <img :alt="safeGetData(currentTheme).desc" :src="safeGetData(currentTheme).icon"
-           class="theme-switcher-icon theme-switcher-icon-current">
-      <img :alt="safeGetData(nextTheme).desc" :src="safeGetData(nextTheme).icon"
-           class="theme-switcher-icon theme-switcher-icon-preview">
-    </button>
+  <div class="theme-switcher-container" @click="toggleTheme">
+    <img :alt="safeGetData(currentTheme).desc" :src="safeGetData(currentTheme).icon"
+         class="theme-switcher-icon theme-switcher-icon-current">
+    <img :alt="safeGetData(nextTheme).desc" :src="safeGetData(nextTheme).icon"
+         class="theme-switcher-icon theme-switcher-icon-preview">
   </div>
 </template>
 
@@ -85,12 +86,6 @@ onMounted(() => {
   top: 0;
   right: 0;
   z-index: 1000;
-}
-
-.theme-switcher-button {
-  position: relative;
-  background-color: transparent;
-  border: none;
   cursor: pointer;
   padding: 0;
   margin: 0;
@@ -118,17 +113,17 @@ onMounted(() => {
   z-index: 0;
 }
 
-.theme-switcher-button:hover .theme-switcher-icon-current {
+.theme-switcher-container:hover .theme-switcher-icon-current {
   opacity: 0;
 }
 
-.theme-switcher-button:hover .theme-switcher-icon-preview {
+.theme-switcher-container:hover .theme-switcher-icon-preview {
   opacity: 1;
 }
 
 @media (hover: none) and (pointer: coarse) {
   /* 禁用所有hover效果 */
-  .theme-switcher-button:hover .theme-switcher-icon {
+  .theme-switcher-container:hover .theme-switcher-icon {
     opacity: 1 !important;
   }
 
