@@ -1,22 +1,31 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
+import {computed, type Ref, ref} from 'vue';
 import {authAPI} from '@/assets/scripts/api';
-import {useRouter} from 'vue-router';
+import router from "@/router";
+import type {Account} from "@/assets/scripts/api/types";
 
-const router = useRouter();
-const username = ref('');
-const isLoggedIn = ref(false);
+
+const userInfo: Ref<Account | undefined> = ref(undefined);
+
+const username = computed(() => {
+  return userInfo.value?.username ?? '未登录';
+});
+const isLoggedIn = computed(() => {
+  return userInfo.value?.active ?? false;
+});
 
 // 获取当前用户信息
 const fetchUser = async () => {
+  let response
   try {
-    const response = await authAPI.whoami();
-    username.value = response.accounts[0]?.username || '用户';
-    isLoggedIn.value = true;
-  } catch (error) {
-    username.value = '未登录';
-    isLoggedIn.value = false;
+    response = await authAPI.whoami();
   }
+  catch (error) {
+    userInfo.value = undefined;
+    return;
+  }
+
+  userInfo.value = response.accounts[0]
 };
 
 // 处理登出
@@ -34,13 +43,9 @@ const handleLogout = async () => {
   }
 };
 
-onMounted(() => {
+router.beforeEach(() => {
   fetchUser();
-});
-// 在跳转页面时检查
-router.afterEach(() => {
-  fetchUser();
-});
+})
 </script>
 
 <template>
@@ -50,9 +55,9 @@ router.afterEach(() => {
 
 <style lang="scss" scoped>
 .username {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 1.7rem;
+  top: 1.6rem;
   transform: translate(-50%, -50%);
 
   content: '1';
@@ -66,7 +71,7 @@ router.afterEach(() => {
   padding: .4rem .8rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / 0.1);
+  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / .1);
   border-radius: 2rem;
 }
 </style>

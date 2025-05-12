@@ -1,33 +1,5 @@
 import axios, {AxiosError, type AxiosInstance, type AxiosResponse} from 'axios';
-
-// 类型定义 -------------------------------------------------------------------
-type APIResult<T = any> = {
-    code: number; message: string;
-} & T;
-
-interface GetAccounts extends APIResult {
-    accounts: Array<{
-        id: number; username: string; roles: string[]; active: boolean;
-    }>;
-}
-
-interface GetRoles extends APIResult {
-    roles: Array<{
-        id: number; name: string; description: string;
-    }>;
-}
-
-interface GetPermissions extends APIResult {
-    permissions: Array<{
-        id: number; name: string; description: string;
-    }>;
-}
-
-interface APIError extends Error {
-    code?: number;
-    data?: any;
-    status?: number;
-}
+import type {APIError, APIResult, GetAccounts, GetPermissions, GetRoles} from "./types";
 
 // Axios 实例配置 ------------------------------------------------------------
 const apiClient: AxiosInstance = axios.create({
@@ -79,8 +51,7 @@ apiClient.interceptors.response.use((response: AxiosResponse<APIResult>) => {
 const authAPI = {
     /** 用户登录 */
     login: (username: string, password: string): Promise<APIResult> => apiClient.post('/auth/login', {
-        username,
-        password
+        username, password
     }),
 
     /** 用户注销 */
@@ -90,10 +61,20 @@ const authAPI = {
     whoami: (): Promise<GetAccounts> => apiClient.get('/auth/whoami'),
 
     /** 获取账户列表 */
-    getAccounts: (): Promise<GetAccounts> => apiClient.get('/auth/accounts'),
+    getAccounts: (filter?: {
+        username?: string; roles?: string[]; active?: boolean;
+    }): Promise<GetAccounts> => apiClient.get('/auth/accounts', {params: filter}),
 
     /** 获取单个账户 */
-    getAccount: (accountId: number): Promise<GetAccounts> => apiClient.get(`/auth/accounts/${accountId}`),
+    getAccount: (accountId: string): Promise<GetAccounts> => apiClient.get(`/auth/accounts/${accountId}`),
+
+    /** 更新账户信息 */
+    updateAccount: (accountId: string, userData: {
+        username?: string;
+        password?: string;
+        roles?: string[];
+        active?: boolean;
+    }): Promise<APIResult> => apiClient.put(`/auth/accounts/${accountId}`, userData),
 
     /** 创建账户 */
     createAccount: (userData: {
@@ -101,14 +82,19 @@ const authAPI = {
     }): Promise<APIResult> => apiClient.post('/auth/accounts', userData),
 
     /** 删除账户 */
-    deleteAccount: (accountId: number): Promise<APIResult> => apiClient.delete(`/auth/accounts/${accountId}`),
+    deleteAccount: (accountId: string): Promise<APIResult> => apiClient.delete(`/auth/accounts/${accountId}`),
 
     /** 获取角色列表 */
-    getRoles: (): Promise<GetRoles> => apiClient.get('/auth/roles'),
+    getRoles: (filter?: {
+        name?: string; description?: string; permissions?: string[];
+    }): Promise<GetRoles> => apiClient.get('/auth/roles', {params: filter}),
 
     /** 获取权限列表 */
-    getPermissions: (): Promise<GetPermissions> => apiClient.get('/auth/permissions'),
-};
+    getPermissions: (filter?: {
+        name?: string; description?: string;
+    }): Promise<GetPermissions> => apiClient.get('/auth/permissions', {params: filter}),
+}
+
 
 // 增强错误处理 --------------------------------------------------------------
 function handleAPIError(error: APIError): Promise<never> {
@@ -130,6 +116,8 @@ function handleAPIError(error: APIError): Promise<never> {
         case 422: // WrongUsernameOrPassword
             message = '用户名或密码错误';
             break;
+        case 423: // DisabledAccount
+            message = '账户已被禁用';
     }
 
     console.error(`[API Error ${error.code}]`, message, error.data);
@@ -139,5 +127,4 @@ function handleAPIError(error: APIError): Promise<never> {
 // 挂载全局错误处理
 apiClient.interceptors.response.use(response => response, error => handleAPIError(error));
 
-export type {APIResult, GetAccounts, GetRoles, GetPermissions, APIError};
 export {apiClient, authAPI};

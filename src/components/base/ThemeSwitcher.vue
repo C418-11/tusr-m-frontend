@@ -37,14 +37,6 @@ function toggleTheme() {
   currentTheme.value = nextTheme.value;
 }
 
-function safeGetData(theme: string) {
-  return ThemeData.value[theme] ?? {
-    name: undefined,
-    icon: "",
-    desc: "Undefined"
-  }
-}
-
 onMounted(() => {
       [
         {
@@ -72,16 +64,16 @@ onMounted(() => {
 
 <template>
   <div class="theme-switcher-container" @click="toggleTheme">
-    <img :alt="safeGetData(currentTheme).desc" :src="safeGetData(currentTheme).icon"
-         class="theme-switcher-icon theme-switcher-icon-current">
-    <img :alt="safeGetData(nextTheme).desc" :src="safeGetData(nextTheme).icon"
-         class="theme-switcher-icon theme-switcher-icon-preview">
+    <img :alt="ThemeData[currentTheme]?.desc ?? 'Undefined'" :src="ThemeData[currentTheme]?.icon ?? ''"
+         class="theme-switcher-current">
+    <img :alt="ThemeData[nextTheme]?.desc ?? 'Undefined'" :src="ThemeData[nextTheme]?.icon ?? ''"
+         class="theme-switcher-preview">
   </div>
 </template>
 
 <style scoped>
 .theme-switcher-container {
-  position: absolute;
+  position: fixed;
   display: flex;
   top: 0;
   right: 0;
@@ -89,9 +81,19 @@ onMounted(() => {
   cursor: pointer;
   padding: 0;
   margin: 0;
+
+  &:hover {
+    .theme-switcher-current {
+      opacity: 0;
+    }
+
+    .theme-switcher-preview {
+      opacity: 1;
+    }
+  }
 }
 
-.theme-switcher-icon {
+.theme-switcher-current, .theme-switcher-preview {
   position: absolute;
   top: 0;
   right: 0;
@@ -103,32 +105,18 @@ onMounted(() => {
   -webkit-user-drag: none;
 }
 
-.theme-switcher-icon-current {
-  z-index: 1;
-  opacity: 1;
-}
-
-.theme-switcher-icon-preview {
+.theme-switcher-preview {
   opacity: 0;
-  z-index: 0;
-}
-
-.theme-switcher-container:hover .theme-switcher-icon-current {
-  opacity: 0;
-}
-
-.theme-switcher-container:hover .theme-switcher-icon-preview {
-  opacity: 1;
 }
 
 @media (hover: none) and (pointer: coarse) {
   /* 禁用所有hover效果 */
-  .theme-switcher-container:hover .theme-switcher-icon {
+  .theme-switcher-container:hover .theme-switcher-current .theme-switcher-preview {
     opacity: 1 !important;
   }
 
   /* 完全隐藏预览图标 */
-  .theme-switcher-icon-preview {
+  .theme-switcher-preview {
     display: none !important;
   }
 }

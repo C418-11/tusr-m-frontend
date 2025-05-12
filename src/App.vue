@@ -3,6 +3,7 @@ import ThemeSwitcher from "@/components/base/ThemeSwitcher.vue";
 import Background from '@/components/base/Background.vue';
 import Notification from '@/components/base/Notification.vue';
 import UserProfile from "@/components/base/UserProfile.vue";
+import BackButton from "@/components/base/BackButton.vue";
 import {onMounted} from "vue";
 
 onMounted(() => {
@@ -17,6 +18,7 @@ onMounted(() => {
   <Notification/>
   <ThemeSwitcher/>
   <UserProfile/>
+  <BackButton/>
 
   <router-view/>
 </template>

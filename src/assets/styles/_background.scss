@@ -14,7 +14,7 @@
 
 //noinspection CssUnusedSymbol
 .background-spot {
-  position: absolute;
+  position: fixed;
   border-radius: 50%;
   animation: drift 20s linear infinite;
   transform: translate(-50%, -50%);

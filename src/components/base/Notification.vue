@@ -72,16 +72,19 @@ window.showNotification = showNotification;
 .notification {
   position: relative;
   display: flex;
-  width: fit-content;
+
   gap: .7em;
-  border-radius: 2em;
-  align-items: center;
   padding: 0.7em 1.1em;
+  border-radius: 2em;
+
+  width: fit-content;
+  align-items: center;
+  overflow-wrap: anywhere;
+  transition: box-shadow var(--theme-transition-duration);
+
   box-shadow: 0 .5em 1em rgba(var(--color-box-shadow) / .1);
   backdrop-filter: blur(2em);
   -webkit-backdrop-filter: blur(2em);
-  overflow-wrap: anywhere;
-  transition: box-shadow var(--theme-transition-duration);
 
   &:before {
     align-self: flex-start;
@@ -91,36 +94,48 @@ window.showNotification = showNotification;
     border-radius: 50%;
     flex-shrink: 0;
   }
-}
 
-/* 处理列表项移动的过渡 */
-.notification-move {
-  transition: transform var(--notifications-move-duration) linear;
-}
+  /* 处理列表项移动的过渡 */
+  &-move {
+    transition: transform var(--notifications-move-duration) linear;
+  }
 
-/* 进入和离开动画 */
-.notification-enter-active,
-.notification-leave-active {
-  transition: transform var(--notifications-enter-leave-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55),
-  opacity var(--notifications-enter-leave-duration) linear;
-}
+  /* 进入和离开动画 */
+  &-enter-active,
+  &-leave-active {
+    transition: transform var(--notifications-enter-leave-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55),
+    opacity var(--notifications-enter-leave-duration) linear;
+  }
 
-.notification-enter-from,
-.notification-leave-to {
-  transform: translateX(-100%);
-  opacity: 0;
-}
+  &-enter-from,
+  &-leave-to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
 
-/* 类型样式 */
-.notification-success::before {
-  background: var(--color-success);
-}
+  /* 类型样式 */
+  &-success::before {
+    background: var(--color-success);
+  }
 
-.notification-error::before {
-  background: var(--color-error);
-}
+  &-error::before {
+    background: var(--color-error);
+  }
 
-.notification-warning::before {
-  background: var(--color-warning);
+  &-warning::before {
+    background: var(--color-warning);
+  }
+
+  &-info::before {
+    background: var(--color-info);
+  }
+
+  &-processing::before {
+    background: var(--color-processing);
+  }
+
+  &-checking::before {
+    background: var(--color-checking);
+  }
 }
 </style>
