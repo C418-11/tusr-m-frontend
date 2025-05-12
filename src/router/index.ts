@@ -13,26 +13,6 @@ const routes = [{
         requiresAuth: true
     }
 }, {
-    path: '/test-table-v2', name: 'TestTable-v2', component: () => import('@/views/manage/TestTablev2.vue'), meta: {
-        requiresAuth: true
-    }
-}, {
-    path: '/test-table-v3', name: 'TestTable-v3', component: () => import('@/views/manage/TestTablev3.vue'), meta: {
-        requiresAuth: true
-    }
-}, {
-    path: '/test-table-v4', name: 'TestTable-v4', component: () => import('@/views/manage/TestTablev4.vue'), meta: {
-        requiresAuth: true
-    }
-}, {
-    path: '/test-table-v5', name: 'TestTable-v5', component: () => import('@/views/manage/TestTablev5.vue'), meta: {
-        requiresAuth: true
-    }
-}, {
-    path: '/test-table-v6', name: 'TestTable-v6', component: () => import('@/views/manage/TestTablev6.vue'), meta: {
-        requiresAuth: true
-    }
-}, {
     path: '/login', name: 'Login', component: () => import('@/views/Login.vue'),
 }, {
     path: '/:pathMatch(.*)', name: 'PageNotFound', component: () => import('@/views/404.vue'), hidden: true
