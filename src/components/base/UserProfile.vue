@@ -1,50 +1,50 @@
 <script lang="ts" setup>
-import {computed, type Ref, ref} from 'vue';
-import {authAPI} from '@/assets/scripts/api';
-import router from "@/router";
-import type {Account} from "@/assets/scripts/api/types";
+import {computed, type Ref, ref} from 'vue'
+import {authAPI} from '@/assets/scripts/api'
+import router from "@/router"
+import type {Account} from "@/assets/scripts/api/types"
 
 
-const userInfo: Ref<Account | undefined> = ref(undefined);
+const userInfo: Ref<Account | undefined> = ref(undefined)
 
 const username = computed(() => {
-  return userInfo.value?.username ?? '未登录';
-});
+  return userInfo.value?.username ?? '未登录'
+})
 const isLoggedIn = computed(() => {
-  return userInfo.value?.active ?? false;
-});
+  return userInfo.value?.active ?? false
+})
 
 // 获取当前用户信息
 const fetchUser = async () => {
   let response
   try {
-    response = await authAPI.whoami();
+    response = await authAPI.whoami()
   }
   catch (error) {
-    userInfo.value = undefined;
-    return;
+    userInfo.value = undefined
+    return
   }
 
   userInfo.value = response.accounts[0]
-};
+}
 
 // 处理登出
 const handleLogout = async () => {
   if (!isLoggedIn.value) {
-    await router.push('/login');
-    return;
+    await router.push('/login')
+    return
   }
   try {
-    await authAPI.logout();
-    window.showNotification('已安全登出', 'success');
-    await router.push('/login');
+    await authAPI.logout()
+    window.showNotification('已安全登出', 'success')
+    await router.push('/login')
   } catch (error) {
-    window.showNotification('登出失败，请重试', 'error');
+    window.showNotification('登出失败，请重试', 'error')
   }
-};
+}
 
 router.beforeEach(() => {
-  fetchUser();
+  fetchUser()
 })
 </script>
 
@@ -60,7 +60,7 @@ router.beforeEach(() => {
   top: 1.6rem;
   transform: translate(-50%, -50%);
 
-  content: '1';
+  content: '';
   font-weight: 500;
   color: var(--neutral-900);
   white-space: nowrap;

@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import router from "@/router";
+import router from "@/router"
 
 const handleBack = () => {
   if (window.history.state.back) {
-    router.back();
+    router.back()
   } else {
-    router.push('/');
+    router.push('/')
   }
-};
+}
 </script>
 
 <template>

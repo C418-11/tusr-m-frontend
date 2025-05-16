@@ -9,4 +9,5 @@ export interface TableColumn {
     options?: Array<{ label: string; value: any }>
     customComponent?: any
     readonly?: boolean
+    sort?: (a: any, b: any) => number
 }

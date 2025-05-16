@@ -2,6 +2,7 @@
 import {computed, ref, shallowRef, watch} from 'vue'
 import {type TableColumn} from './types'
 import CellRenderer from "./CellRenderer.vue"
+import {throttle} from 'lodash'
 
 // ------ Props -----------------------------------------
 interface Props {
@@ -13,7 +14,9 @@ interface Props {
   freezeFirstColumn?: boolean
 
   readonly?: boolean
+  readonlyRows?: Record<string, boolean>
   pureText?: boolean
+  pureTextRows?: Record<string, boolean>
 
   allowHeaderDrag?: boolean
   allowRowDrag?: boolean
@@ -29,7 +32,9 @@ const props = withDefaults(defineProps<Props>(), {
   freezeFirstColumn: true,
 
   readonly: false,
+  readonlyRows: () => ({} as Record<string, boolean>),
   pureText: false,
+  pureTextRows: () => ({} as Record<string, boolean>),
 
   allowHeaderDrag: false,
   allowRowDrag: false,
@@ -97,6 +102,12 @@ function handleColumnDragStart(e: DragEvent, index: number) {
   e.dataTransfer?.setData("text/plain", "header")
 }
 
+const _updateColumnDragOverIndex = throttle(
+    (index: number) => columnDragOverIndex.value = index,
+    100,
+    {leading: true, trailing: true},
+)
+
 function handleColumnDragOver(e: DragEvent, index: number) {
   if (transpose.value) {
     if (!props.allowRowDrag) return
@@ -105,7 +116,7 @@ function handleColumnDragOver(e: DragEvent, index: number) {
   if (!props.allowDragTranspose && columnDragStartIndex.value === -1) return
 
   e.preventDefault()
-  columnDragOverIndex.value = index
+  _updateColumnDragOverIndex(index)
 }
 
 function handleColumnDragEnd() {
@@ -134,27 +145,33 @@ const rowDragOverIndex = ref(-1)
 function handleRowDragStart(e: DragEvent, index: number) {
   if (transpose.value) {
     if (!props.allowHeaderDrag) return
-  } else if (!props.allowRowDrag) return
+  } else if (!props.allowRowDrag || sortState.value.direction !== 'none') return
 
   rowDragStartIndex.value = index
   e.dataTransfer?.setData("text/plain", "row")
 }
 
+const _updateRowDragOverIndex = throttle(
+    (index: number) => rowDragOverIndex.value = index,
+    100,
+    {leading: true, trailing: true},
+)
+
 function handleRowDragOver(e: DragEvent, index: number) {
   if (transpose.value) {
     if (!props.allowHeaderDrag) return
-  } else if (!props.allowRowDrag) return
+  } else if (!props.allowRowDrag || sortState.value.direction !== 'none') return
 
   if (!props.allowDragTranspose && rowDragStartIndex.value === -1) return
 
   e.preventDefault()
-  rowDragOverIndex.value = index
+  _updateRowDragOverIndex(index)
 }
 
 function handleRowDragEnd() {
   if (transpose.value) {
     if (!props.allowHeaderDrag) return
-  } else if (!props.allowRowDrag) return
+  } else if (!props.allowRowDrag || sortState.value.direction !== 'none') return
 
   const hasDragged = rowDragStartIndex.value !== -1 && rowDragOverIndex.value !== -1
   const hasChanged = rowDragStartIndex.value !== rowDragOverIndex.value
@@ -174,18 +191,68 @@ function cleanupDrag() {
   columnDragOverIndex.value = -1
   rowDragStartIndex.value = -1
   rowDragOverIndex.value = -1
+
+  _updateColumnDragOverIndex.cancel()
+  _updateRowDragOverIndex.cancel()
+}
+
+// ------ Sort ------------------------------------------
+const sortState = ref<{
+  key: string
+  direction: 'asc' | 'desc' | 'none'
+}>({key: '', direction: 'none'})
+
+
+const sortedData = computed(() => {
+  if (props.transpose) return []  // 暂不支持转置模式下排序
+  if (sortState.value.direction === 'none' || !sortState.value.key) {
+    return tableData.value
+  }
+
+  const column = orderedColumns.value.find(col => col.key === sortState.value.key)
+  if (!column?.sort) return tableData.value
+
+  const compareFn = column.sort
+  return [...tableData.value].sort((a, b) => {
+    const result = compareFn(a[sortState.value.key], b[sortState.value.key])
+    return sortState.value.direction === 'asc' ? result : -result
+  })
+})
+
+function handleSortClick(col: TableColumn) {
+  if (!col.sort) return // 无排序函数则不处理
+
+  if (sortState.value.key === col.key) {
+    // 同一列，切换方向
+    const nextDirection = {
+      'none': 'asc',
+      'asc': 'desc',
+      'desc': 'none',
+    }[sortState.value.direction] as 'asc' | 'desc' | 'none'
+
+    sortState.value = {
+      key: nextDirection === 'none' ? '' : col.key,
+      direction: nextDirection,
+    }
+  } else {
+    // 新列，默认升序
+    sortState.value = {
+      key: col.key,
+      direction: 'asc',
+    }
+  }
 }
 
 // ------ Transpose -------------------------------------
-const transpose = ref(props.transpose);
+const transpose = ref(props.transpose)
 
 watch(() => props.transpose, (newVal) => {
-  transpose.value = newVal;
-});
+  transpose.value = newVal
+})
 
 // 转置数据转换
 const transposedData = computed(() => {
-  if (!transpose.value) return tableData.value
+  if (!transpose.value) return []  // 非转置模式不处理
 
   // 获取转置前的第一列key
   const firstColumnKey = orderedColumns.value[0]?.key
@@ -250,7 +317,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
         >
           {{ orderedColumns[0].title }}
         </div>
-        <!-- 最左边固定列（原始表头） -->
+        <!-- 表头（原最左侧固定列） -->
         <template v-for="(col, colIndex) in transposedColumns" :key="col.id">
           <div
               :class="{
@@ -263,10 +330,14 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
               @dragover="handleRowDragOver($event, colIndex)"
               @dragstart="handleRowDragStart($event, colIndex)"
           >
+            <template v-if="pureText || col.fieldType === 'pure-text' || props.pureTextRows[col.key]">
+              {{ col.title }}
+            </template>
             <CellRenderer
+                v-else
                 :column="col"
-                :pure-text="pureText"
-                :readonly="transposedColumns[0].readonly || readonly"
+                :pure-text="pureText || props.pureTextRows[col.key]"
+                :readonly="readonly || transposedColumns[0].readonly || props.readonlyRows[col.key]"
                 :value="col.title"
                 @update="handleTransposeUpdate(col.key, colIndex, $event)"
             />
@@ -290,16 +361,21 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
           </div>
           <div
               v-for="(value, colIndex) in row.data"
-              :key="colIndex"
+              :key="`row-${rowIndex}-col-${colIndex}`"
               :class="{
                 'drag-over': (allowHeaderDrag && rowDragOverIndex === colIndex) || (allowRowDrag && columnDragOverIndex === rowIndex + 1),
               }"
               class="body-cell"
           >
+            <template v-if="pureText || row.columnConfig.fieldType === 'pure-text' || props.pureTextRows[row.field]">
+              {{ value }}
+            </template>
             <CellRenderer
+                v-else
+                :key="`cell-${rowIndex}-${colIndex}`"
                 :column="row.columnConfig"
-                :pure-text="pureText"
-                :readonly="row.columnConfig?.readonly || readonly"
+                :pure-text="pureText || props.pureTextRows[row.field]"
+                :readonly="readonly || row.columnConfig?.readonly || props.readonlyRows[row.field]"
                 :value="value"
                 @update="handleTransposeUpdate(row.field, colIndex, $event)"
             />
@@ -315,22 +391,30 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
             :class="{
             'drag-over': allowHeaderDrag && columnDragOverIndex === colIndex,
             'freeze-header': freezeHeader,
-            'freeze-row': freezeFirstColumn && colIndex === 0
+            'freeze-row': freezeFirstColumn && colIndex === 0,
+            'sortable': col.sort,
           }"
             :draggable="allowHeaderDrag"
             class="header-cell"
+            @click="handleSortClick(col)"
             @dragend="handleColumnDragEnd"
             @dragover="handleColumnDragOver($event, colIndex)"
             @dragstart="handleColumnDragStart($event, colIndex)"
         >
           {{ col.title }}
+          <span v-if="col.sort" class="sort-arrow">
+            <template v-if="sortState.key === col.key">
+              {{ sortState.direction === 'asc' ? '↑' : '↓' }}
+            </template>
+            <template v-else>·</template>
+          </span>
         </div>
 
         <!-- 数据行 -->
-        <template v-for="(row, rowIndex) in tableData" :key="rowIndex">
+        <template v-for="(row, rowIndex) in sortedData" :key="rowIndex">
           <div
               v-for="(col, colIndex) in orderedColumns"
-              :key="col.key"
+              :key="`row-${rowIndex}-col-${col.key}`"
               :class="{
               'drag-over': (allowRowDrag && rowDragOverIndex === rowIndex) || (allowHeaderDrag && columnDragOverIndex === colIndex),
               'freeze-row': freezeFirstColumn && colIndex === 0,
@@ -341,10 +425,15 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
               @dragover="(allowRowDrag  && colIndex === 0) ? handleRowDragOver($event, rowIndex) : null"
               @dragstart="(allowRowDrag && colIndex === 0) ? handleRowDragStart($event, rowIndex) : null"
           >
+            <template v-if="pureText || col.fieldType === 'pure-text' || props.pureTextRows[col.key]">
+              {{ row[col.key] }}
+            </template>
             <CellRenderer
+                v-else
+                :key="`cell-${rowIndex}-${col.key}`"
                 :column="col"
-                :pure-text="pureText"
-                :readonly="col.readonly || readonly"
+                :pure-text="pureText || props.pureTextRows[col.key]"
+                :readonly="readonly || col.readonly || props.readonlyRows[col.key]"
                 :value="row[col.key]"
                 @update="updateValue(rowIndex, col.key, $event)"
             />
@@ -403,6 +492,19 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
   font-weight: 600;
 
   background: var(--neutral-100);
+
+  &.sortable {
+    cursor: pointer;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  .sort-arrow {
+    margin-left: 0.5rem;
+    color: var(--theme-color);
+  }
 }
 
 .freeze-header {

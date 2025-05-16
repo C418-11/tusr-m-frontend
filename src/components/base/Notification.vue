@@ -1,38 +1,38 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue';
+import {ref, watch} from 'vue'
 
 interface Notification {
-  id: number;
-  message: string;
-  type: string;
+  id: number
+  message: string
+  type: string
 }
 
-const notifications = ref<Notification[]>([]);
-let idCounter = 0;
+const notifications = ref<Notification[]>([])
+let idCounter = 0
 
 watch(notifications, (newVal) => {
   if (newVal.length === 0) {
-    idCounter = 0;
+    idCounter = 0
   }
-}, {deep: true});
+}, {deep: true})
 
 function showNotification(message: string, type: string = 'success', duration: number = 5000) {
-  const id = idCounter++;
-  notifications.value.push({id, message, type});
+  const id = idCounter++
+  notifications.value.push({id, message, type})
 
   setTimeout(() => {
-    const index = notifications.value.findIndex(n => n.id === id);
-    if (index !== -1) notifications.value.splice(index, 1);
-  }, duration);
+    const index = notifications.value.findIndex(n => n.id === id)
+    if (index !== -1) notifications.value.splice(index, 1)
+  }, duration)
 }
 
 // 点击关闭
 function removeNotification(id: number) {
-  const index = notifications.value.findIndex(n => n.id === id);
-  if (index !== -1) notifications.value.splice(index, 1);
+  const index = notifications.value.findIndex(n => n.id === id)
+  if (index !== -1) notifications.value.splice(index, 1)
 }
 
-window.showNotification = showNotification;
+window.showNotification = showNotification
 </script>
 
 <template>

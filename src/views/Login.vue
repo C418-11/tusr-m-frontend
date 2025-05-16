@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import {onMounted, ref} from 'vue';
-import type {APIError} from '@/assets/scripts/api/types';
-import {authAPI} from '@/assets/scripts/api';
-import router from '@/router';
+import {onMounted, ref} from 'vue'
+import type {APIError} from '@/assets/scripts/api/types'
+import {authAPI} from '@/assets/scripts/api'
+import router from '@/router'
 
 enum LoginStatus {
   CHECKING,
@@ -11,42 +11,42 @@ enum LoginStatus {
 }
 
 
-const username = ref('');
-const password = ref('');
-const loginStatus = ref(LoginStatus.CHECKING);
+const username = ref('')
+const password = ref('')
+const loginStatus = ref(LoginStatus.CHECKING)
 
 showNotification("正在检查登录状态...", "checking")
 
 async function checkLoginStatus() {
   try {
-    await authAPI.whoami();
-    router.back();
+    await authAPI.whoami()
+    router.back()
     showNotification('您已登录，正在跳转...', 'info')
   } catch (error) {
-    loginStatus.value = LoginStatus.CAN_LOGIN;
+    loginStatus.value = LoginStatus.CAN_LOGIN
   }
 }
 
 onMounted(() => {
-  checkLoginStatus();
-});
+  checkLoginStatus()
+})
 
 async function handleLogin() {
   if (!username.value || !password.value) {
-    showNotification('请输入用户名和密码', 'warning');
-    return;
+    showNotification('请输入用户名和密码', 'warning')
+    return
   }
 
   try {
-    loginStatus.value = LoginStatus.LOGGING_IN;
-    await authAPI.login(username.value, password.value);
-    showNotification('登录成功', 'success');
-    router.back();
+    loginStatus.value = LoginStatus.LOGGING_IN
+    await authAPI.login(username.value, password.value)
+    showNotification('登录成功', 'success')
+    router.back()
   } catch (error) {
-    const apiError = error as APIError;
-    showNotification(apiError.message || '登录失败', 'error');
+    const apiError = error as APIError
+    showNotification(apiError.message || '登录失败', 'error')
   } finally {
-    loginStatus.value = LoginStatus.CAN_LOGIN;
+    loginStatus.value = LoginStatus.CAN_LOGIN
   }
 }
 </script>

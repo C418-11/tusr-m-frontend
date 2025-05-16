@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import {ref, watch} from 'vue'
-import UniversalTable, {type TableColumn} from 'src/components/UniversalTable'
+import {defineAsyncComponent, markRaw, ref, watch} from 'vue'
+import UniversalTable, {type TableColumn} from '@/components/UniversalTable'
 
 interface User {
   name: string
@@ -60,26 +60,28 @@ function generateBirthday(i: number, years: number[], months: number[], days: nu
   return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
 }
 
+const sorter = (a: string, b: string) => a.localeCompare(b)
+
 const columns: TableColumn[] = [
   {
     key: 'name',
     title: '姓名',
     fieldType: 'text',
-    width: '200px'
+    width: '200px',
+    sort: sorter
   },
   {
     key: 'status',
     title: '状态',
-    fieldType: 'select',
-    options: [
-      {label: '激活', value: 'active'},
-      {label: '禁用', value: 'inactive'}
-    ]
+    fieldType: 'custom', // 修改为custom类型
+    customComponent: markRaw(defineAsyncComponent(() => import('@/components/StatusButton.vue'))),
+    sort: sorter
   },
   {
     key: 'birthday',
     title: '生日',
-    fieldType: 'date'
+    fieldType: 'date',
+    sort: sorter
   },
   {
     key: 't1',
@@ -133,7 +135,7 @@ const columns: TableColumn[] = [
   },
 ]
 
-const tableData = ref(generateUsers(100))
+const tableData = ref(generateUsers(20))
 watch(tableData, () => {
   showNotification("updated", 'info')
 })
@@ -145,19 +147,19 @@ watch(tableData, () => {
       <h1 class="text-neutral-900">冻结表格测试</h1>
       <UniversalTable
           v-model="tableData"
+          :allow-drag-transpose="true"
           :allow-header-drag="true"
           :allow-row-drag="true"
           :columns="columns"
           :freeze-first-column="true"
           :freeze-header="true"
           :pure-text="false"
+          :pure-text-rows="{'birthday': false, 't9': true}"
           :readonly="false"
+          :readonly-rows="{'status': false, 't10': true}"
           :transpose="false"
-          :allow-drag-transpose="true"
           class="test-table"
-      >
-        <!-- todo 自定义列示例 -->
-      </UniversalTable>
+      />
     </div>
   </div>
 </template>

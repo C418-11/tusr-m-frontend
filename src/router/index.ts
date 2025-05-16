@@ -1,5 +1,5 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {authAPI} from "@/assets/scripts/api";
+import {authAPI} from "@/assets/scripts/api"
 
 // noinspection JSUnusedGlobalSymbols
 const routes = [{
@@ -9,9 +9,9 @@ const routes = [{
         requiresAuth: true
     }
 }, {
-    path: '/test-table-v1', name: 'TestTable-v1', component: () => import('@/views/manage/TestTable.vue'), meta: {
-        requiresAuth: true
-    }
+    path: '/debug/universal-table',
+    name: 'UniversalTable',
+    component: () => import('@/views/debug/TestUniversalTable.vue')
 }, {
     path: '/login', name: 'Login', component: () => import('@/views/Login.vue'),
 }, {
@@ -24,23 +24,23 @@ const router = createRouter({
 
 router.beforeEach(async (to, _, next) => {
     if (!to.matched.some(record => record.meta.requiresAuth)) {
-        next();
-        return;
+        next()
+        return
     }
 
-    showNotification("正在检查页面访问权限...", 'checking');
-    let response = undefined;
+    showNotification("正在检查页面访问权限...", 'checking')
+    let response = undefined
     try {
-        response = await authAPI.whoami();
+        response = await authAPI.whoami()
     } catch (error) {
     }
 
-    next();
-    if ((response === undefined) || (response?.accounts[0]?.active !== true)) {
-        showNotification("未登录，正在跳转登录页面！", 'processing');
+    next()
+    if ((response === undefined) || !response?.accounts[0]?.active) {
+        showNotification("未登录，正在跳转登录页面！", 'processing')
         requestAnimationFrame(() => setTimeout(() => router.push({name: "Login"}), 1000))
-        return;
+        return
     }
-});
+})
 
 export default router

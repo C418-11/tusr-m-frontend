@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
 import { type TableColumn } from './types'
+import {debounce} from 'lodash'
+import {onUnmounted, shallowRef} from 'vue'
 
-defineProps<{
+const props = defineProps<{
   column: TableColumn
   value: any
   readonly?: boolean
@@ -13,12 +15,29 @@ const emit = defineEmits<{
   (e: 'update', value: any): void
 }>()
 
-const formatDate = (date: string) => {
-  return dayjs(date).format('YYYY-MM-DD')
+// 内部缓存值
+const internalValue = shallowRef(props.value)
+
+// 防抖更新
+const emitUpdate = debounce((value: any) => {
+  emit('update', value)
+}, 500)
+
+onUnmounted(() => {
+  emitUpdate.flush()
+  emitUpdate.cancel()
+})
+
+// 统一处理更新逻辑
+const handleUpdate = (value: any) => {
+  // 立即更新内部值
+  internalValue.value = value
+  // 触发防抖更新
+  emitUpdate(value)
 }
 
-const handleUpdate = (value: any) => {
-  emit('update', value)
+const formatDate = (date: string) => {
+  return dayjs(date).format('YYYY-MM-DD')
 }
 </script>
 
@@ -79,6 +98,7 @@ const handleUpdate = (value: any) => {
       <component
           :is="column.customComponent"
           :value="value"
+          :readonly="readonly"
           @update:value="handleUpdate"
       />
     </slot>

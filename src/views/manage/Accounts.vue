@@ -139,8 +139,8 @@ async function handleUpdate() {
       password?: string
       roles: string[]
       active: boolean
-    } = JSON.parse(JSON.stringify(editAccount.value));
-    delete userData.id;
+    } = JSON.parse(JSON.stringify(editAccount.value))
+    delete userData.id
     if (!userData.password) {
       delete userData.password
     }
@@ -286,9 +286,9 @@ function openCreateDialog() {
             <input
                 v-model="editAccount.username"
                 :disabled="editMode!=EditMode.CREATE"
-                type="text"
-                placeholder="请输入用户名"
                 :title="editMode!=EditMode.CREATE ? '用户名不可更改' : ''"
+                placeholder="请输入用户名"
+                type="text"
             >
           </div>
           <div class="form-group">
