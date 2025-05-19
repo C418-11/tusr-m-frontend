@@ -19,8 +19,7 @@ const fetchUser = async () => {
   let response
   try {
     response = await authAPI.whoami()
-  }
-  catch (error) {
+  } catch (error) {
     userInfo.value = undefined
     return
   }
@@ -53,25 +52,23 @@ router.beforeEach(() => {
         @click="handleLogout">{{ username }}</span>
 </template>
 
-<style lang="scss" scoped>
-.username {
-  position: fixed;
-  left: 50%;
-  top: 1.6rem;
-  transform: translate(-50%, -50%);
+<style lang="sass" scoped>
+.username
+  position: fixed
+  left: 50%
+  top: 1.6rem
+  transform: translate(-50%, -50%)
 
-  content: '';
-  font-weight: 500;
-  color: var(--neutral-900);
-  white-space: nowrap;
+  content: ''
+  font-weight: 500
+  color: var(--neutral-900)
+  white-space: nowrap
+  z-index: 9998
+  cursor: pointer
 
-  z-index: 9998;
-  cursor: pointer;
-
-  padding: .4rem .8rem;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / .1);
-  border-radius: 2rem;
-}
+  padding: .4rem .8rem
+  backdrop-filter: blur(10px)
+  -webkit-backdrop-filter: blur(10px)
+  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / .1)
+  border-radius: 2rem
 </style>

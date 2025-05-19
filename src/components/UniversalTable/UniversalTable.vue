@@ -292,6 +292,22 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
   tableData.value = newData
   emit('update:modelValue', newData)
 }
+
+// ------ Utils -----------------------------------------
+interface TitleOptionals {
+  draggable?: boolean
+  clickable?: boolean,
+  frozen?: boolean
+}
+
+function freezeTitle(options: TitleOptionals) {
+  let title: string[] = []
+  if (options.draggable) title.push('可拖动')
+  if (options.clickable) title.push('可排序')
+  if (props.allowDragTranspose && props.allowHeaderDrag && props.allowRowDrag) title.push('可转置')
+  if (options.frozen) title.push('固定列')
+  return title.join('，')
+}
 </script>
 
 <template>
@@ -310,6 +326,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
               'freeze-row': freezeFirstColumn
             }"
             :draggable="allowRowDrag"
+            :title="freezeTitle({draggable: allowRowDrag})"
             class="header-cell"
             @dragend="handleColumnDragEnd"
             @dragover="handleColumnDragOver($event, 0)"
@@ -325,6 +342,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
                 'freeze-header': freezeHeader
               }"
               :draggable="allowHeaderDrag"
+              :title="freezeTitle({draggable: allowHeaderDrag})"
               class="header-cell"
               @dragend="handleRowDragEnd"
               @dragover="handleRowDragOver($event, colIndex)"
@@ -352,6 +370,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
                 'drag-over': allowRowDrag && columnDragOverIndex === rowIndex + 1,
               }"
               :draggable="allowRowDrag"
+              :title="freezeTitle({draggable: allowRowDrag})"
               class="body-cell"
               @dragend="handleColumnDragEnd"
               @dragover="handleColumnDragOver($event, rowIndex + 1)"
@@ -395,6 +414,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
             'sortable': col.sort,
           }"
             :draggable="allowHeaderDrag"
+            :title="freezeTitle({draggable: allowHeaderDrag, clickable: true})"
             class="header-cell"
             @click="handleSortClick(col)"
             @dragend="handleColumnDragEnd"
@@ -420,6 +440,7 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
               'freeze-row': freezeFirstColumn && colIndex === 0,
             }"
               :draggable="allowRowDrag && colIndex === 0"
+              :title="allowRowDrag && colIndex === 0 ? freezeTitle({draggable: true}) : ''"
               class="body-cell"
               @dragend="(allowRowDrag && colIndex === 0) ? handleRowDragEnd() : cleanupDrag()"
               @dragover="(allowRowDrag  && colIndex === 0) ? handleRowDragOver($event, rowIndex) : null"
@@ -444,82 +465,65 @@ function handleTransposeUpdate(field: string, colIndex: number, value: any) {
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/styles/main";
+<style lang="sass" scoped>
+@use "@/assets/styles/main"
 
-.freeze-table-container {
-  max-width: 100%;
-  overflow: auto;
-  border: 1px solid var(--neutral-200);
-  border-radius: 0.5rem;
-  @include main.theme-transition;
-}
+.freeze-table-container
+  max-width: 100%
+  overflow: auto
+  border: 1px solid var(--neutral-200)
+  border-radius: 0.5rem
+  @include main.theme-transition
 
-.freeze-table {
-  display: grid;
-  position: relative;
-  min-width: fit-content;
-}
+.freeze-table
+  display: grid
+  position: relative
+  min-width: fit-content
 
 .header-cell,
-.body-cell {
-  padding: 1rem;
-  border-bottom: 1px solid var(--neutral-200);
-  border-right: 1px solid var(--neutral-200);
+.body-cell
+  padding: 1rem
+  border-bottom: 1px solid var(--neutral-200)
+  border-right: 1px solid var(--neutral-200)
+  background: var(--neutral-50)
+  @include main.theme-transition("box-shadow .4s")
 
-  background: var(--neutral-50);
+  &:last-child
+    border-right: none
 
-  @include main.theme-transition("box-shadow .4s");
+  &.drag-over
+    box-shadow: inset 0 0 0 2px rgb(var(--theme-color))
 
-  &:last-child {
-    border-right: none;
-  }
+  &[draggable="true"]
+    cursor: grab
 
-  &.drag-over {
-    box-shadow: inset 0 0 0 2px rgb(var(--theme-color));
-  }
+    &:active
+      cursor: grabbing
 
-  &[draggable="true"] {
-    cursor: grab;
+.header-cell
+  font-weight: 600
+  background: var(--neutral-100)
 
-    &:active {
-      cursor: grabbing;
-    }
-  }
-}
+  &.sortable
+    cursor: pointer
 
-.header-cell {
-  font-weight: 600;
+    &:active
+      cursor: grabbing
 
-  background: var(--neutral-100);
+  .sort-arrow
+    margin-left: 0.5rem
+    color: var(--theme-color)
 
-  &.sortable {
-    cursor: pointer;
+.freeze-header
+  position: sticky
+  top: 0
+  z-index: 2
 
-    &:active {
-      cursor: grabbing;
-    }
-  }
+.freeze-row
+  position: sticky
+  left: 0
+  z-index: 1
 
-  .sort-arrow {
-    margin-left: 0.5rem;
-    color: var(--theme-color);
-  }
-}
-
-.freeze-header {
-  position: sticky;
-  top: 0;
-  z-index: 2;
-}
-
-.freeze-row {
-  position: sticky;
-  left: 0;
-  z-index: 1;
-
-  &.freeze-header {
-    z-index: 3;
-  }
-}
+  &.freeze-header
+    z-index: 3
 </style>

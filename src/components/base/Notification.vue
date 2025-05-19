@@ -55,87 +55,74 @@ window.showNotification = showNotification
   </TransitionGroup>
 </template>
 
-<style lang="scss" scoped>
-.notifications-container {
-  position: fixed;
-  display: flex;
-  z-index: 9999;
-  top: .5em;
-  left: .5em;
-  gap: 1em;
-  flex-direction: column-reverse;
+<style lang="sass" scoped>
+.notifications-container
+  position: fixed
+  display: flex
+  z-index: 9999
+  top: .5em
+  left: .5em
+  gap: 1em
+  flex-direction: column-reverse
 
-  --notifications-enter-leave-duration: 0.4s;
-  --notifications-move-duration: 0.2s;
-}
+  --notifications-enter-leave-duration: 0.4s
+  --notifications-move-duration: 0.2s
 
-.notification {
-  position: relative;
-  display: flex;
+.notification
+  position: relative
+  display: flex
+  gap: .7em
+  padding: 0.7em 1.1em
+  border-radius: 2em
+  width: fit-content
+  align-items: center
+  overflow-wrap: anywhere
+  transition: box-shadow var(--theme-transition-duration)
+  box-shadow: 0 .5em 1em rgba(var(--color-box-shadow) / .1)
+  backdrop-filter: blur(2em)
+  -webkit-backdrop-filter: blur(2em)
 
-  gap: .7em;
-  padding: 0.7em 1.1em;
-  border-radius: 2em;
-
-  width: fit-content;
-  align-items: center;
-  overflow-wrap: anywhere;
-  transition: box-shadow var(--theme-transition-duration);
-
-  box-shadow: 0 .5em 1em rgba(var(--color-box-shadow) / .1);
-  backdrop-filter: blur(2em);
-  -webkit-backdrop-filter: blur(2em);
-
-  &:before {
-    align-self: flex-start;
-    content: "";
-    width: 1.3em;
-    height: 1.3em;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
+  &:before
+    align-self: flex-start
+    content: ""
+    width: 1.3em
+    height: 1.3em
+    border-radius: 50%
+    flex-shrink: 0
 
   /* 处理列表项移动的过渡 */
-  &-move {
-    transition: transform var(--notifications-move-duration) linear;
-  }
+
+  &-move
+    transition: transform var(--notifications-move-duration) linear
 
   /* 进入和离开动画 */
+
   &-enter-active,
-  &-leave-active {
-    transition: transform var(--notifications-enter-leave-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55),
-    opacity var(--notifications-enter-leave-duration) linear;
-  }
+  &-leave-active
+    transition: transform var(--notifications-enter-leave-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity var(--notifications-enter-leave-duration) linear
 
   &-enter-from,
-  &-leave-to {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
+  &-leave-to
+    transform: translateX(-100%)
+    opacity: 0
 
   /* 类型样式 */
-  &-success::before {
-    background: var(--color-success);
-  }
 
-  &-error::before {
-    background: var(--color-error);
-  }
+  &-success::before
+    background: var(--color-success)
 
-  &-warning::before {
-    background: var(--color-warning);
-  }
+  &-error::before
+    background: var(--color-error)
 
-  &-info::before {
-    background: var(--color-info);
-  }
+  &-warning::before
+    background: var(--color-warning)
 
-  &-processing::before {
-    background: var(--color-processing);
-  }
+  &-info::before
+    background: var(--color-info)
 
-  &-checking::before {
-    background: var(--color-checking);
-  }
-}
+  &-processing::before
+    background: var(--color-processing)
+
+  &-checking::before
+    background: var(--color-checking)
 </style>

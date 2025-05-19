@@ -1,0 +1,38 @@
+/* ===============================================
+ * 中性色阶
+ * =============================================== */
+$neutral-palette: (50: #fafafa, 100: #f5f5f5, 200: #e5e5e5, 300: #d4d4d4, 400: #a3a3a3, 500: #737373, 600: #525252, 700: #404040, 800: #262626, 900: #171717)
+
+/* ===============================================
+ * 透明度体系
+ * =============================================== */
+// 生成透明度变量 (10%-90%)
+@mixin generate-opacity-vars($base-name, $rgb-values)
+  @for $i from 1 through 9
+    $opacity: $i * 0.1
+    --#{$base-name}-#{$i * 10}: rgba(#{$rgb-values}, #{$opacity})
+
+:root
+  /* 中性色导出为 CSS 变量 */
+  @each $key, $value in $neutral-palette
+    --neutral-#{$key}: #{$value}
+
+  /* 黑/白透明度生成 */
+  @include generate-opacity-vars('black-opacity', '0, 0, 0')
+  @include generate-opacity-vars('white-opacity', '255, 255, 255')
+
+  /* 文本/背景色快捷工具 */
+  @each $key, $value in $neutral-palette
+    .text-neutral-#{$key}
+      color: var(--neutral-#{$key})
+    .bg-neutral-#{$key}
+      background-color: var(--neutral-#{$key})
+
+/* ===============================================
+ * 暗黑模式适配
+ * =============================================== */
+@mixin dark
+  $dark-neutral-palette: (50: #0a0a0a, 100: #1a1a1a, 200: #2a2a2a, 300: #3a3a3a, 400: #4a4a4a, 500: #5a5a5a, 600: #6a6a6a, 700: #7a7a7a, 800: #8a8a8a, 900: #9a9a9a)
+
+  @each $key, $value in $dark-neutral-palette
+    --neutral-#{$key}: #{$value}

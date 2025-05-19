@@ -91,31 +91,24 @@ async function handleLogin() {
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/styles/main";
+<style lang="sass" scoped>
+@use "@/assets/styles/main"
 
-.input-group {
-  margin-bottom: 1.5rem;
-}
+.input-group
+  margin-bottom: 1.5rem
 
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-}
+label
+  display: block
+  margin-bottom: 0.5rem
 
-.input-field, .login-button {
-  width: 100%;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
+.input-field, .login-button
+  width: 100%
+  padding: 0.75rem
+  border-radius: 0.5rem
+  box-sizing: border-box
 
-  box-sizing: border-box;
-}
-
-.login-button {
-  @include main.theme-transition("opacity 0.3s ease, background-color 0.3s ease");
-
-  &:hover {
-    opacity: 0.9;
-  }
-}
+.login-button
+  @include main.theme-transition("opacity 0.3s ease, background-color 0.3s ease")
+  &:hover
+    opacity: 0.9
 </style>

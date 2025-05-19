@@ -13,6 +13,10 @@ const routes = [{
     name: 'UniversalTable',
     component: () => import('@/views/debug/TestUniversalTable.vue')
 }, {
+    path: '/debug/editable-data-table',
+    name: 'EditableDataTable',
+    component: () => import('@/views/debug/TestEditableDataTable.vue')
+}, {
     path: '/login', name: 'Login', component: () => import('@/views/Login.vue'),
 }, {
     path: '/:pathMatch(.*)', name: 'PageNotFound', component: () => import('@/views/404.vue'), hidden: true

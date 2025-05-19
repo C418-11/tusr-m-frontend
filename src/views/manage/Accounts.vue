@@ -9,7 +9,6 @@ enum EditMode {
   EDIT
 }
 
-
 // 响应式数据
 const accounts = ref<Account[]>([])
 const roles = ref<Role[]>([])
@@ -333,137 +332,110 @@ function openCreateDialog() {
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/styles/main";
+<style lang="sass" scoped>
+@use "@/assets/styles/main"
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
+.header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  margin-bottom: 2rem
 
-.create-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+.create-btn
+  padding: 0.75rem 1.5rem
+  border-radius: 0.5rem
 
-  &:hover {
-    opacity: 0.9;
-  }
-}
+  &:hover
+    opacity: 0.9
 
-.account-table {
-  width: 100%;
-  border-collapse: collapse;
+.account-table
+  width: 100%
+  border-collapse: collapse
 
-  th, td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--neutral-200);
+  th, td
+    padding: 1rem
+    text-align: left
+    border-bottom: 1px solid var(--neutral-200)
+    @include main.theme-transition
 
-    @include main.theme-transition;
-  }
+  .role-tag
+    display: inline-block
+    padding: 0.25rem 0.75rem
+    margin: 0.25rem
+    border-radius: 1rem
+    background: var(--neutral-100)
+    color: var(--neutral-700)
+    @include main.theme-transition
 
-  .role-tag {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    margin: 0.25rem;
-    border-radius: 1rem;
-    background: var(--neutral-100);
-    color: var(--neutral-700);
+  .status
+    padding: 0.2rem 0.6rem
+    border-radius: 0.5rem
+    @include main.theme-transition("background-color 1s")
 
-    @include main.theme-transition;
-  }
+    &.active
+      background: var(--color-success)
+      color: var(--neutral-50)
 
-  .status {
-    padding: .2rem .6rem;
-    border-radius: .5rem;
+    &.inactive
+      background: var(--color-error)
+      color: var(--neutral-50)
 
-    @include main.theme-transition("background-color 1s");
+  .actions
+    button
+      padding: 0.4rem 0.8rem
+      margin: 0.3rem
+      border-radius: 0.25rem
 
-    &.active {
-      background: var(--color-success);
-      color: var(--neutral-50);
+      &.delete
+        background: var(--color-error)
 
-    }
+.dialog
+  z-index: 1001
 
-    &.inactive {
-      background: var(--color-error);
-      color: var(--neutral-50);
-    }
-  }
+  &-content
+    background: var(--neutral-50)
+    padding: 2rem
+    border-radius: 1rem
+    width: 500px
+    @include main.theme-transition
 
-  .actions {
-    button {
-      padding: 0.4rem .8rem;
-      margin: 0.3rem;
-      border-radius: 0.25rem;
+  .form-group
+    margin-bottom: 1.5rem
 
-      &.delete {
-        background: var(--color-error);
-      }
-    }
-  }
-}
+    label
+      display: block
+      margin-bottom: 0.5rem
 
-.dialog {
-  &-content {
-    background: var(--neutral-50);
-    padding: 2rem;
-    border-radius: 1rem;
-    width: 500px;
+    input, select
+      width: 100%
+      border-radius: 0.5rem
+      padding: 0.75rem
 
-    @include main.theme-transition;
-  }
+    select[multiple]
+      option
+        padding: 0.5em
+        margin: 0.3em
+        border-radius: 0.5em
 
-  .form-group {
-    margin-bottom: 1.5rem;
+    &.checkbox
+      label
+        display: flex
+        align-items: center
+        gap: 0.5rem
 
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
+  &-actions
+    display: flex
+    justify-content: flex-end
+    gap: 1rem
+    margin-top: 1.5rem
 
-    input, select {
-      width: 100%;
-      border-radius: 0.5rem;
-      padding: 0.75rem;
-    }
+    button
+      border-radius: 0.5rem
+      padding: 0.5rem 1rem
 
-    select[multiple] {
-      option {
-        padding: 0.5em;
-        margin: 0.3em;
-        border-radius: 0.5em;
-      }
-    }
-
-    &.checkbox {
-      label {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-    }
-  }
-
-  &-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-top: 1.5rem;
-
-    button {
-      border-radius: 0.5rem;
-      padding: .5rem 1rem;
-    }
-  }
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--neutral-500);
-  cursor: progress;
-}
+.loading
+  text-align: center
+  padding: 2rem
+  color: var(--neutral-500)
+  cursor: progress
 </style>

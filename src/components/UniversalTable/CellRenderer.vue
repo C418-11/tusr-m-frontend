@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import dayjs from 'dayjs'
-import { type TableColumn } from './types'
+import {type TableColumn} from './types'
 import {debounce} from 'lodash'
 import {onUnmounted, shallowRef} from 'vue'
 
@@ -92,28 +92,26 @@ const formatDate = (date: string) => {
   <template v-else-if="column.fieldType === 'custom'">
     <slot
         :name="`custom-${column.key}`"
-        :value="value"
         :update="handleUpdate"
+        :value="value"
     >
       <component
           :is="column.customComponent"
-          :value="value"
           :readonly="readonly"
+          :value="value"
           @update:value="handleUpdate"
       />
     </slot>
   </template>
 </template>
 
-<style lang="scss" scoped>
-input, select {
-  width: 100%;
-  height: 100%;
-  padding: .5rem;
-  border-radius: .25rem;
-}
+<style lang="sass" scoped>
+input, select
+  width: 100%
+  height: 100%
+  padding: .5rem
+  border-radius: .25rem
 
-select {
-  cursor: pointer;
-}
+select
+  cursor: pointer
 </style>

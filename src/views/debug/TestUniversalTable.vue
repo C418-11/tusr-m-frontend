@@ -164,9 +164,8 @@ watch(tableData, () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-.test-table {
-  max-height: 65vh;
-  margin-top: 2rem;
-}
+<style lang="sass" scoped>
+.test-table
+  max-height: 65vh
+  margin-top: 2rem
 </style>

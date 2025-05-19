@@ -18,35 +18,32 @@ const handleBack = () => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/styles/main";
+<style lang="sass" scoped>
+@use "@/assets/styles/main"
 
-.back-button-container {
-  position: fixed;
-  top: .6rem;
-  left: .6rem;
-  z-index: 9997;
-  cursor: pointer;
-  padding: 0.8rem;
-  border-radius: 50%;
-  background: var(--neutral-50);
-  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.back-button-container
+  position: fixed
+  top: .6rem
+  left: .6rem
+  z-index: 9997
+  cursor: pointer
+  padding: 0.8rem
+  border-radius: 50%
+  background: var(--neutral-50)
+  box-shadow: 0 0.25rem 1rem rgba(var(--color-box-shadow) / 0.1)
+  backdrop-filter: blur(10px)
+  -webkit-backdrop-filter: blur(10px)
 
-  @include main.theme-transition("transform .4s linear");
+  @include main.theme-transition("transform .4s linear")
 
-  &:active {
-    transform: scale(0.90);
-  }
-}
+  &:active
+    transform: scale(0.90)
 
-.back-icon {
-  width: 1.6rem;
-  height: 1.6rem;
-  color: var(--neutral-900);
-  display: block;
+.back-icon
+  width: 1.6rem
+  height: 1.6rem
+  color: var(--neutral-900)
+  display: block
 
-  @include main.theme-transition;
-}
+  @include main.theme-transition
 </style>

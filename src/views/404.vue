@@ -39,47 +39,40 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="scss" scoped>
-@use "@/assets/styles/main";
+<style lang="sass" scoped>
+@use "@/assets/styles/main"
 
-.error-card {
-  text-align: center;
+.error-card
+  text-align: center
 
-  h1 {
-    font-size: 6rem;
-    font-weight: 800;
-    margin: 0 0 1rem;
-    line-height: 1;
-  }
+  h1
+    font-size: 6rem
+    font-weight: 800
+    margin: 0 0 1rem
+    line-height: 1
 
-  h2 {
-    font-size: 2rem;
-    margin: 0 0 1.5rem;
-    font-weight: 600;
-  }
+  h2
+    font-size: 2rem
+    margin: 0 0 1.5rem
+    font-weight: 600
 
-  p {
-    font-size: 1.1rem;
-    margin: 0 0 2.5rem;
-    line-height: 1.6;
-  }
-}
+  p
+    font-size: 1.1rem
+    margin: 0 0 2.5rem
+    line-height: 1.6
 
-.home-btn {
-  padding: 1rem 2.5rem;
-  border-radius: 0.75rem;
-  font-size: 1.1rem;
+.home-btn
+  padding: 1rem 2.5rem
+  border-radius: 0.75rem
+  font-size: 1.1rem
 
-  @include main.theme-transition("transform 0.2s ease, opacity 0.2s ease");
+  @include main.theme-transition("transform 0.2s ease, opacity 0.2s ease")
 
-  &:hover {
-    opacity: 0.9;
-    transform: translateY(-.1em);
-  }
+  &:hover
+    opacity: 0.9
+    transform: translateY(-.1em)
 
-  &:active {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+  &:active
+    opacity: 1
+    transform: translateY(0)
 </style>
