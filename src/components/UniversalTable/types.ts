@@ -4,8 +4,8 @@ export type FieldType = 'pure-text' | 'text' | 'number' | 'select' | 'date' | 'c
 export interface TableColumn {
     key: string
     title: string
-    width?: string
     fieldType: FieldType
+    width?: string
     options?: Array<{ label: string; value: any }>
     customComponent?: any
     readonly?: boolean
