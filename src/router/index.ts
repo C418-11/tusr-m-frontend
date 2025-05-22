@@ -9,13 +9,20 @@ const routes = [{
         requiresAuth: true
     }
 }, {
+    path: '/manage/classes', name: 'ManageClasses', component: () => import('@/views/manage/Classes.vue'), meta: {
+        requiresAuth: true
+    }
+}, {
     path: '/debug/universal-table',
     name: 'UniversalTable',
     component: () => import('@/views/debug/TestUniversalTable.vue')
 }, {
     path: '/debug/editable-data-table',
     name: 'EditableDataTable',
-    component: () => import('@/views/debug/TestEditableDataTable.vue')
+    component: () => import('@/views/debug/TestEditableDataTable.vue'),
+    meta: {
+        requiresAuth: true
+    }
 }, {
     path: '/login', name: 'Login', component: () => import('@/views/Login.vue'),
 }, {

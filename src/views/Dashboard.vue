@@ -27,8 +27,10 @@ fetchUser()
         <div class="group-box">
           <h3 class="group-title">账户管理</h3>
           <div class="group-links">
+            <!-- todo 硬编码Role -->
             <template v-if="(user?.roles ?? []).includes('admin')">
               <router-link :to="{name: 'ManageAccounts'}">账户列表</router-link>
+              <router-link :to="{name: 'ManageClasses'}">班级管理</router-link>
             </template>
             <template v-else-if="checking">正在检查登录状态...</template>
             <template v-else>未登录或权限不足</template>

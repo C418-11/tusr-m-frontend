@@ -14,7 +14,7 @@ interface Props {
   freezeFirstColumn?: boolean
 
   readonly?: boolean
-  readonlyRows?: Record<string, boolean>
+  readonlyRows?: Record<string, boolean>  // todo fix
   pureText?: boolean
   pureTextRows?: Record<string, boolean>
 
