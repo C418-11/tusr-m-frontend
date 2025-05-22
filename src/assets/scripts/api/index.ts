@@ -1,5 +1,5 @@
 import axios, {AxiosError, type AxiosInstance, type AxiosResponse} from 'axios'
-import type {APIError, APIResult, GetAccounts, GetPermissions, GetRoles} from "./types"
+import type {APIError, APIResult, GetAccounts, GetPermissions, GetRoles, GetRows, GetTables} from "./types"
 
 // Axios 实例配置 ------------------------------------------------------------
 const apiClient: AxiosInstance = axios.create({
@@ -103,6 +103,17 @@ const authAPI = {
     }): Promise<GetPermissions> => apiClient.get('/auth/permissions', {params: filter}),
 }
 
+const dataAPI = {
+    /** 获取数据库表结构元数据 */
+    getTables: (): Promise<GetTables> => apiClient.get('/data/tables'),
+
+    /** 获取数据库表结构元数据 */
+    getTable: (tableName: string): Promise<GetTables> => apiClient.get(`/data/tables/${tableName}`),
+
+    /** 获取数据行 */
+    getRows: (tableName: string, offset?: number, limit?: number): Promise<GetRows> => apiClient.get(`/data/tables/${tableName}/rows/${offset}/${limit}`),
+}
+
 
 // 增强错误处理 --------------------------------------------------------------
 function handleAPIError(error: APIError): Promise<never> {
@@ -126,6 +137,10 @@ function handleAPIError(error: APIError): Promise<never> {
             break
         case 423: // DisabledAccount
             message = '账户已被禁用'
+            break
+        case 132: // DataTableNotFound
+            message = `数据表不存在`
+            break
     }
 
     console.error(`[API Error ${error.code}]`, message, error.data)
@@ -135,4 +150,4 @@ function handleAPIError(error: APIError): Promise<never> {
 // 挂载全局错误处理
 apiClient.interceptors.response.use(response => response, error => handleAPIError(error))
 
-export {apiClient, authAPI}
+export {apiClient, authAPI, dataAPI}
