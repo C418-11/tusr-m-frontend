@@ -68,6 +68,9 @@ watch(() => [props.columns, props.columnOrder], () => {
 
 // 数据同步
 const tableData = shallowRef(props.modelValue)
+watch(props, () => {
+  tableData.value = props.modelValue
+})
 
 function updateValue(rowIndex: number, key: string, value: any) {
   if (props.readonly) return
@@ -487,6 +490,9 @@ function freezeTitle(options: TitleOptionals) {
   border-right: 1px solid var(--neutral-200)
   background: var(--neutral-50)
   @include main.theme-transition("box-shadow .4s")
+
+  overflow: hidden
+  text-overflow: ellipsis
 
   &:last-child
     border-right: none
