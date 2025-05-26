@@ -90,19 +90,22 @@ export const Translate: Record<string, Record<string, string>> = {
     }, household_counties: {
         id: "行", name: "县名称"
     },
-}
+} as const
 
+type TranslateType = typeof Translate
+type TableNames = keyof TranslateType
 
-export const FieldOrder: Record<string, string[]> = {
+export const FieldOrder: {
+    [K in TableNames]: Array<keyof TranslateType[K]>
+} = {
     students: ["id", "campus_name", "school_class_id", "student_id", "certificate_type_id", "certificate_number", "name", "gender_id", "birthday", "ethnic_group_id", "phone", "bank_name", "bank_account", "previous_education_level_id", "student_origin_id", "student_category_id", "political_status_id", "household_type_id", "household_area_id", "household_address", "household_province_id", "household_city_id", "household_county_id", "is_overseas_chinese", "admission_year", "enrollment_quarter_id", "major_code", "training_level_id", "education_system_id", "admission_time", "student_status_id", "study_mode_id", "family_contact_name", "family_contact_phone", "family_address", "postal_code", "hobby", "award_situation", "old_army", "original_rank_id", "military_base", "enlistment_time", "retirement_time", "retire_type_id", "health_status_id", "national_student_id", "is_guangdong_technical_school_graduation", "graduation_school", "graduation_certificate_number", "graduation_major", "graduation_skill_level", "comprehensive_score", "science_score", "family_annual_income", "family_per_capita_income", "family_income_source", "is_ethnic_minority_below_100k", "is_low_income", "financial_aid_type_id", "is_poor_households", "father_name", "father_certificate_type_id", "father_certificate_number", "mother_name", "mother_certificate_type_id", "mother_certificate_number", "guardian_certificate_type_id", "guardian_certificate_number", "guardian_name", "guardian_contact", "remark1", "remark2", "remark3", "remark4", "remark5", "nationality_id", "is_family_difficulty", "family_difficulty_type_id", "social_security_card_number", "payment_amount", "payment_receipt_number",],
 }
 
 
-export function getTranslation(tableName: string, fieldName: string) {
-    if (!Translate[tableName]) return fieldName
-    return Translate[tableName][fieldName] ?? fieldName
+export function getTranslation<T extends TableNames>(tableName: T, fieldName: keyof TranslateType[T]) {
+    return Translate[tableName]?.[fieldName] ?? fieldName
 }
 
-export function reOrder(tableName: string, order: string[]) {
+export function getOrder<T extends TableNames>(tableName: T): Array<keyof TranslateType[T]> {
     return FieldOrder[tableName]
 }

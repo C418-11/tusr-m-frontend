@@ -1,11 +1,9 @@
 <script lang="ts" setup>
-
-
 interface Handlers {
   edit: () => void
   delete: () => void
+  deletedId?: number
 }
-
 
 defineProps<{
   value: Handlers
@@ -17,15 +15,17 @@ defineProps<{
 <template>
   <div class="table-actions">
     <button
-        v-if="!readonly"
+        :data-readonly="readonly"
+        :disabled="value?.deletedId !== undefined"
         class="edit-btn"
         @click="value.edit"
-    >编辑
+    >{{ readonly ? "编辑" : "取消" }}
     </button>
     <button
+        :data-deleted="value?.deletedId !== undefined"
         class="delete-btn"
         @click="value.delete"
-    >删除
+    >{{ value?.deletedId ? "还原" : "删除" }}
     </button>
   </div>
 </template>
@@ -43,6 +43,15 @@ defineProps<{
     &.edit-btn
       background: var(--color-warning)
 
+      &[data-readonly="true"]
+        background: var(--color-success)
+
+      &:disabled
+        background: var(--color-processing)
+
     &.delete-btn
       background: var(--color-error)
+
+      &[data-deleted="true"]
+        background: var(--color-info)
 </style>

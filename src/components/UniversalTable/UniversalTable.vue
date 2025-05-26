@@ -14,7 +14,7 @@ interface Props {
   freezeFirstColumn?: boolean
 
   readonly?: boolean
-  readonlyRows?: Record<string, boolean>  // todo fix
+  readonlyRows?: Record<number, boolean>
   pureText?: boolean
   pureTextRows?: Record<string, boolean>
 
@@ -254,7 +254,7 @@ watch(() => props.transpose, (newVal) => {
 })
 
 // 转置数据转换
-const transposedData = computed(() => {
+const transposedData = computed<Record<string, any>[]>(() => {
   if (!transpose.value) return []  // 非转置模式不处理
 
   // 获取转置前的第一列key
@@ -358,7 +358,7 @@ function freezeTitle(options: TitleOptionals) {
                 v-else
                 :column="col"
                 :pure-text="pureText || props.pureTextRows[col.key]"
-                :readonly="readonly || transposedColumns[0].readonly || props.readonlyRows[col.key]"
+                :readonly="readonly || transposedColumns[0].readonly || props.readonlyRows[colIndex]"
                 :value="col.title"
                 @update="handleTransposeUpdate(col.key, colIndex, $event)"
             />
@@ -367,6 +367,7 @@ function freezeTitle(options: TitleOptionals) {
 
         <!-- 数据行 -->
         <template v-for="(row, rowIndex) in transposedData" :key="row.field">
+          <!-- todo last-in-row last-in-column -->
           <div
               :class="{
                 'freeze-row': freezeFirstColumn,
@@ -397,7 +398,7 @@ function freezeTitle(options: TitleOptionals) {
                 :key="`cell-${rowIndex}-${colIndex}`"
                 :column="row.columnConfig"
                 :pure-text="pureText || props.pureTextRows[row.field]"
-                :readonly="readonly || row.columnConfig?.readonly || props.readonlyRows[row.field]"
+                :readonly="readonly || row.columnConfig?.readonly || props.readonlyRows[colIndex]"
                 :value="value"
                 @update="handleTransposeUpdate(row.field, colIndex, $event)"
             />
@@ -415,6 +416,8 @@ function freezeTitle(options: TitleOptionals) {
             'freeze-header': freezeHeader,
             'freeze-row': freezeFirstColumn && colIndex === 0,
             'sortable': col.sort,
+            'last-in-row': colIndex === orderedColumns.length - 1,
+            'last-in-column': sortedData.length === 0,
           }"
             :draggable="allowHeaderDrag"
             :title="freezeTitle({draggable: allowHeaderDrag, clickable: true})"
@@ -441,6 +444,8 @@ function freezeTitle(options: TitleOptionals) {
               :class="{
               'drag-over': (allowRowDrag && rowDragOverIndex === rowIndex) || (allowHeaderDrag && columnDragOverIndex === colIndex),
               'freeze-row': freezeFirstColumn && colIndex === 0,
+              'last-in-row': colIndex === orderedColumns.length - 1,
+              'last-in-column': rowIndex === sortedData.length - 1,
             }"
               :draggable="allowRowDrag && colIndex === 0"
               :title="allowRowDrag && colIndex === 0 ? freezeTitle({draggable: true}) : ''"
@@ -457,7 +462,7 @@ function freezeTitle(options: TitleOptionals) {
                 :key="`cell-${rowIndex}-${col.key}`"
                 :column="col"
                 :pure-text="pureText || props.pureTextRows[col.key]"
-                :readonly="readonly || col.readonly || props.readonlyRows[col.key]"
+                :readonly="readonly || col.readonly || props.readonlyRows[rowIndex]"
                 :value="row[col.key]"
                 @update="updateValue(rowIndex, col.key, $event)"
             />
@@ -485,6 +490,10 @@ function freezeTitle(options: TitleOptionals) {
 
 .header-cell,
 .body-cell
+  display: flex
+  align-items: center
+  justify-content: center
+
   padding: 1rem
   border-bottom: 1px solid var(--neutral-200)
   border-right: 1px solid var(--neutral-200)
@@ -492,10 +501,14 @@ function freezeTitle(options: TitleOptionals) {
   @include main.theme-transition("box-shadow .4s")
 
   overflow: hidden
+  white-space: nowrap
   text-overflow: ellipsis
 
-  &:last-child
+  &.last-in-row
     border-right: none
+
+  &.last-in-column
+    border-bottom: none
 
   &.drag-over
     box-shadow: inset 0 0 0 2px rgb(var(--theme-color))
@@ -517,7 +530,7 @@ function freezeTitle(options: TitleOptionals) {
       cursor: grabbing
 
   .sort-arrow
-    margin-left: 0.5rem
+    margin-left: 0.1rem
     color: var(--theme-color)
 
 .freeze-header
