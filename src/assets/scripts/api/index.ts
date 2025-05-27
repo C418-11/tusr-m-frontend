@@ -117,31 +117,65 @@ const dataAPI = {
     createRow: (tableName: string, rowData: Record<string, any>): Promise<APIResult> => apiClient.post(`/data/tables/${tableName}/rows`, rowData),
 }
 
+// noinspection JSUnusedGlobalSymbols
+enum APICode {
+    // --1
+    // -1
+    RequestSuccess = 111,
+
+    // -2
+    LoginSuccess = 121,
+    LogoutSuccess = 221,
+    GetAccounts = 321,
+    GetRoles = 421,
+    GetPermissions = 521,
+
+    // -3
+    GetTables = 131,
+    GetRows = 231,
+
+    // --2
+    // -1
+    APINotFound = 112,
+    WrongMethod = 212,
+    APIInternalError = 312,
+    APIArgumentError = 412,
+
+    // -2
+    Unauthorized = 122,
+    PermissionDenied = 222,
+    AccountNotFound = 322,
+    WrongUsernameOrPassword = 422,
+    DisabledAccount = 423,
+
+    // -3
+    DataTableNotFound = 132,
+}
 
 // 增强错误处理 --------------------------------------------------------------
 function handleAPIError(error: APIError): Promise<never> {
     let message = error.message
 
     switch (error.code) {
-        case 122: // Unauthorized
+        case APICode.Unauthorized:
             message = '登录状态已过期，请重新登录'
             break
-        case 222: // PermissionDenied
+        case APICode.PermissionDenied:
             message = `权限不足，缺少权限: ${error.data?.missing_permissions?.join(', ') || ''}`
             break
-        case 412: // APIArgumentError
+        case APICode.APIArgumentError:
             const args = error.data?.arguments || {}
             message = Object.values(args)
                 .flat()
                 .join(' ')
             break
-        case 422: // WrongUsernameOrPassword
+        case APICode.WrongUsernameOrPassword:
             message = '用户名或密码错误'
             break
-        case 423: // DisabledAccount
+        case APICode.DisabledAccount:
             message = '账户已被禁用'
             break
-        case 132: // DataTableNotFound
+        case APICode.DataTableNotFound:
             message = `数据表不存在`
             break
     }
@@ -153,4 +187,4 @@ function handleAPIError(error: APIError): Promise<never> {
 // 挂载全局错误处理
 apiClient.interceptors.response.use(response => response, error => handleAPIError(error))
 
-export {apiClient, authAPI, dataAPI}
+export {apiClient, authAPI, dataAPI, APICode}
