@@ -326,7 +326,9 @@ function freezeTitle(options: TitleOptionals) {
             :class="{
               'drag-over': allowHeaderDrag && columnDragOverIndex === 0,
               'freeze-header': freezeHeader,
-              'freeze-row': freezeFirstColumn
+              'freeze-row': freezeFirstColumn,
+              'last-in-column': transposedData.length === 0,
+              'last-in-row': transposedColumns.length === 0,
             }"
             :draggable="allowRowDrag"
             :title="freezeTitle({draggable: allowRowDrag})"
@@ -342,7 +344,9 @@ function freezeTitle(options: TitleOptionals) {
           <div
               :class="{
                 'drag-over': allowHeaderDrag && rowDragOverIndex === colIndex,
-                'freeze-header': freezeHeader
+                'freeze-header': freezeHeader,
+                'last-in-row': colIndex === transposedColumns.length - 1,
+                'last-in-column': transposedData.length === 0,
               }"
               :draggable="allowHeaderDrag"
               :title="freezeTitle({draggable: allowHeaderDrag})"
@@ -367,11 +371,12 @@ function freezeTitle(options: TitleOptionals) {
 
         <!-- 数据行 -->
         <template v-for="(row, rowIndex) in transposedData" :key="row.field">
-          <!-- todo last-in-row last-in-column -->
           <div
               :class="{
                 'freeze-row': freezeFirstColumn,
                 'drag-over': allowRowDrag && columnDragOverIndex === rowIndex + 1,
+                'last-in-row': transposedColumns.length === 0,
+                'last-in-column': rowIndex === transposedData.length - 1,
               }"
               :draggable="allowRowDrag"
               :title="freezeTitle({draggable: allowRowDrag})"
@@ -387,6 +392,8 @@ function freezeTitle(options: TitleOptionals) {
               :key="`row-${rowIndex}-col-${colIndex}`"
               :class="{
                 'drag-over': (allowHeaderDrag && rowDragOverIndex === colIndex) || (allowRowDrag && columnDragOverIndex === rowIndex + 1),
+                'last-in-row': colIndex === transposedColumns.length - 1,
+                'last-in-column': rowIndex === transposedData.length - 1,
               }"
               class="body-cell"
           >
