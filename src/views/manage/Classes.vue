@@ -9,7 +9,7 @@ import EditableDataTable from "@/components/EditableDataTable/EditableDataTable.
       <h1>班级管理</h1>
       <EditableDataTable
           class="table"
-          table="students"
+          table="classes"
       />
     </div>
   </div>
