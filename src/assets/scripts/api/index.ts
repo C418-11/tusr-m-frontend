@@ -112,6 +112,9 @@ const dataAPI = {
 
     /** 获取数据行 */
     getRows: (tableName: string, offset?: number, limit?: number): Promise<GetRows> => apiClient.get(`/data/tables/${tableName}/rows/${offset}/${limit}`),
+
+    /** 创建数据行 */
+    createRow: (tableName: string, rowData: Record<string, any>): Promise<APIResult> => apiClient.post(`/data/tables/${tableName}/rows`, rowData),
 }
 
 
