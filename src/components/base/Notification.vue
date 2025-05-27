@@ -16,14 +16,44 @@ watch(notifications, (newVal) => {
   }
 }, {deep: true})
 
-function showNotification(message: string, type: string = 'success', duration: number = 5000) {
-  const id = idCounter++
-  notifications.value.push({id, message, type})
+function parseDuration(duration: number | string): number {
+  let milliseconds: number;
+
+  if (typeof duration === 'number') {
+    milliseconds = duration;
+  } else {
+    const regex = /^(\d+\.?\d*)s$/;
+    const match = duration.match(regex);
+    if (!match) {
+      console.warn(`无效的duration格式: '${duration}'，使用默认值5000ms。`);
+      return 5000;
+    }
+    const seconds = parseFloat(match[1]);
+    milliseconds = seconds * 1000;
+  }
+
+  if (milliseconds >= 0) {
+    return milliseconds;
+  } else {
+    console.warn(`duration不能为负数，使用默认值5000ms。`);
+    return 5000;
+  }
+}
+
+function showNotification(
+    message: string,
+    type: string = 'success',
+    duration: number | string = 5000
+) {
+  const id = idCounter++;
+  notifications.value.push({ id, message, type });
+
+  const parsedDuration = parseDuration(duration);
 
   setTimeout(() => {
-    const index = notifications.value.findIndex(n => n.id === id)
-    if (index !== -1) notifications.value.splice(index, 1)
-  }, duration)
+    const index = notifications.value.findIndex(n => n.id === id);
+    if (index !== -1) notifications.value.splice(index, 1);
+  }, parsedDuration);
 }
 
 // 点击关闭
