@@ -3,6 +3,7 @@ interface Handlers {
   edit: () => void
   delete: () => void
   deletedId?: number
+  diffStatus?: string
 }
 
 defineProps<{
