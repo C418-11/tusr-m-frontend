@@ -38,13 +38,6 @@ export interface GetPermissions extends APIResult {
     permissions: Array<Permission>
 }
 
-// 错误处理类型
-export interface APIError extends Error {
-    code?: number
-    data?: any
-    status?: number
-}
-
 // 表结构元数据类型
 export interface TableColumnMeta {
     default: string | null
@@ -56,7 +49,7 @@ export interface TableColumnMeta {
     unique: boolean
 }
 
-export interface TableMeta{
+export interface TableMeta {
     [columnName: string]: TableColumnMeta
 }
 
@@ -68,4 +61,19 @@ export interface GetTables extends APIResult {
 
 export interface GetRows extends APIResult {
     rows: Record<string, any>[]
+}
+
+// 错误处理类型
+export interface APIError extends Error {
+    code?: number
+    data?: any
+    status?: number
+}
+
+export interface APIArgumentError extends APIError {
+    data: {
+        arguments: {
+            [key: string]: string[]
+        }
+    }
 }
