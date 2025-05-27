@@ -156,7 +156,7 @@ watch(tableData, () => {
           :pure-text="false"
           :pure-text-rows="{'birthday': false, 't9': true}"
           :readonly="false"
-          :readonly-rows="{'status': false, 't10': true}"
+          :readonly-rows="{3: false, 5: true}"
           :transpose="false"
           class="test-table"
       />
