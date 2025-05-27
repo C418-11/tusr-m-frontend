@@ -174,7 +174,11 @@ function handleRowDragOver(e: DragEvent, index: number) {
 function handleRowDragEnd() {
   if (transpose.value) {
     if (!props.allowHeaderDrag) return
-  } else if (!props.allowRowDrag || sortState.value.direction !== 'none') return
+  } else if (!props.allowRowDrag || sortState.value.direction !== 'none') {
+    showNotification('请先取消排序', 'error')
+    cleanupDrag()
+    return
+  }
 
   const hasDragged = rowDragStartIndex.value !== -1 && rowDragOverIndex.value !== -1
   const hasChanged = rowDragStartIndex.value !== rowDragOverIndex.value
