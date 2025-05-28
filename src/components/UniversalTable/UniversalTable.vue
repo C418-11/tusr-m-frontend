@@ -44,7 +44,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 // ------ Emits -----------------------------------------
-const emit = defineEmits(['update:modelValue', 'update:columnOrder'])
+const emit = defineEmits(['update:modelValue', 'update:columnOrder', 'row-swap'])
 
 // ------ Data ------------------------------------------
 // 处理列顺序
@@ -188,6 +188,7 @@ function handleRowDragEnd() {
     newData.splice(rowDragOverIndex.value, 0, moved)
     tableData.value = newData
     emit('update:modelValue', newData)
+    emit('row-swap', rowDragStartIndex.value, rowDragOverIndex.value)
   }
   if (props.allowDragTranspose && columnDragOverIndex.value !== -1) transpose.value = !transpose.value
   cleanupDrag()

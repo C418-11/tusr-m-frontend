@@ -1,10 +1,5 @@
 <script lang="ts" setup>
-interface Handlers {
-  edit: () => void
-  delete: () => void
-  deletedId?: number
-  diffStatus?: string
-}
+import type {Handlers} from "@/components/EditableDataTable/types.ts"
 
 defineProps<{
   value: Handlers
@@ -19,13 +14,13 @@ defineProps<{
         :data-readonly="readonly"
         :disabled="value?.deletedId !== undefined"
         class="edit-btn"
-        @click="value.edit"
+        @click="value.edit(value.index)"
     >{{ readonly ? "编辑" : "取消" }}
     </button>
     <button
         :data-deleted="value?.deletedId !== undefined"
         class="delete-btn"
-        @click="value.delete"
+        @click="value.delete(value.index)"
     >{{ value?.deletedId ? "还原" : "删除" }}
     </button>
   </div>

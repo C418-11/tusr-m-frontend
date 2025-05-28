@@ -4,7 +4,7 @@ import UniversalTable from "@/components/UniversalTable"
 import {defineAsyncComponent, markRaw, ref} from "vue"
 import {APICode, dataAPI} from "@/assets/scripts/api"
 import {getOrder, getTranslation} from "./table_info.ts"
-import type {APIArgumentError, APIError} from "@/assets/scripts/api/types";
+import type {APIArgumentError, APIError} from "@/assets/scripts/api/types"
 
 
 interface Props {
@@ -22,7 +22,6 @@ enum DiffStatus {
 }
 
 
-// 帮我写一个差异管理器，记录增删改的行号，通过快捷方法快速更新差异（如增3，删3则不记录3）
 class DifferenceManager {
   add: Set<number>
   delete: Set<number>
@@ -102,6 +101,13 @@ class DifferenceManager {
       this.delete.delete(rowId)
       this.update.delete(rowId)
     }
+  }
+
+  swapRow(rowId1: number, rowId2: number) {
+    const status1 = this.getStatus(rowId1)
+    const status2 = this.getStatus(rowId2)
+    this.setStatus(rowId1, status2)
+    this.setStatus(rowId2, status1)
   }
 }
 
@@ -204,14 +210,24 @@ function switchDelete(rowId: number) {
   delete row.$actions.diffStatus
 }
 
+function updateActionIndex(rowIndex: number, targetIndex: number) {
+  const [start, end] = [Math.min(rowIndex, targetIndex), Math.max(rowIndex, targetIndex)]
+
+  // 更新区间内所有行的索引
+  for (let i = start; i <= end; i++) {
+    tableData.value[i].$actions.index = i
+  }
+}
+
 async function fetchData() {
   const data = await dataAPI.getRows(props.table, 0, 1000)
   data.rows.forEach(row => {
     const index = row.id - 1
     // noinspection JSUnusedGlobalSymbols
     row.$actions = {
-      edit: () => switchEditable(index),
-      delete: () => switchDelete(index)
+      edit: switchEditable,
+      delete: switchDelete,
+      index: index
     }
   })
   rowDiff.clear()
@@ -228,8 +244,9 @@ function handleAddRow() {
   tableData.value.push({
     id: "⭑",
     $actions: {
-      edit: () => switchEditable(index),
-      delete: () => switchDelete(index)
+      edit: switchEditable,
+      delete: switchDelete,
+      index: index
     }
   })
   columns.value.forEach(column => {
@@ -267,6 +284,14 @@ async function handleSubmit() {
   showNotification('已更新表格', 'success')
   waiting.value = false
 }
+
+function handleRowSwap(oldIndex: number, newIndex: number) {
+  const readonly = rowReadonly.value[oldIndex]
+  rowReadonly.value[oldIndex] = rowReadonly.value[newIndex]
+  rowReadonly.value[newIndex] = readonly
+  rowDiff.swapRow(oldIndex, newIndex)
+  updateActionIndex(oldIndex, newIndex)
+}
 </script>
 
 <template>
@@ -287,6 +312,7 @@ async function handleSubmit() {
       :readonly="waiting"
       :readonly-rows="rowReadonly"
       class="table"
+      @row-swap="handleRowSwap"
   />
 </template>
 
